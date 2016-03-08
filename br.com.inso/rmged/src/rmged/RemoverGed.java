@@ -11,6 +11,8 @@ public class RemoverGed {
 		{
 			File arquivo = new File(args[0]);
 			
+			// Verificar se o arquivo existe antes de exclui-lo.
+			
 			if (arquivo.exists())   
 			{
 				arquivo.delete();
