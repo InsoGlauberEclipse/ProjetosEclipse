@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/templates/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+
+			<f:viewAction action="#{NumeracaoVisitaBean.consultar}" />
+
+		</f:metadata>
+
+		<h1>Manutenção de Numeração das Visitas</h1>
+
+		<h:form id="frm">
+			<p:ajaxStatus styleClass="ajax-status">
+				<f:facet name="start">
+					<h:graphicImage library="inso" name="carregando.gif" />
+				</f:facet>
+				<f:facet name="complete">
+					<h:outputText value="" />
+				</f:facet>
+			</p:ajaxStatus>
+
+			<p:messages id="msgs" />
+
+			<p:toolbar id="toolbar">
+
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						action="#{NumeracaoVisitaBean.prepararNovoCadastro}" process="@this"
+						update="Numeracao-dialog"
+						oncomplete="PF('edicaoNumeracaoDialog').show()">
+						<p:resetInput target="Numeracao-dialog" />
+					</p:commandButton>
+
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:commandButton icon="ui-icon-pencil" title="Editar"
+						process="@this" update="Numeracao-dialog"
+						oncomplete="PF('edicaoNumeracaoDialog').show()"
+						disabled="#{NumeracaoVisitaBean.numeracaoVisitaSelecionada == null}">
+						<p:resetInput target="Numeracao-dialog" />
+
+						<f:setPropertyActionListener
+							value="#{NumeracaoVisitaBean.numeracaoVisitaSelecionada}"
+							target="#{NumeracaoVisitaBean.numeracaoVisitaEdicao}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" title="Excluir"
+						process="@this" update="Aplicacaos-table msgs toolbar"
+						action="#{NumeracaoVisitaBean.excluir}"
+						disabled="#{NumeracaoVisitaBean.numeracaoVisitaSelecionada == null}">
+
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão"
+							message="Tem certeza que deseja excluir a Aplicação?" />
+
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-arrowthick-1-s"
+						title="Exportar para XLS" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:dataTable value="#{NumeracaoVisitaBean.todasNumeracoes}" var="Num"
+				emptyMessage="Nenhuma Numeração encontrada." rows="10"
+				paginator="true" paginatorPosition="bottom" style="margin-top: 10px"
+				id="Aplicacaos-table" selection="#{NumeracaoVisitaBean.numeracaoVisitaSelecionada}"
+				selectionMode="single" rowKey="#{Num.ano}">
+
+				<p:ajax event="rowSelect" update=":frm:toolbar" />
+				<p:ajax event="rowUnselect" update=":frm:toolbar" />
+
+				<p:column headerText="Ano" sortBy="#{Num.ano}"
+					width="250">
+					<h:outputText value="#{Num.ano}" />
+				</p:column>
+				<p:column headerText="Último Número do Relatório" sortBy="#{Num.ultimoRelatorio}"
+					filterBy="#{Num.ultimoRelatorio}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Num.ultimoRelatorio}" />
+				</p:column>
+			</p:dataTable>
+
+			<p:dialog header="Edição de Numeracao" widgetVar="edicaoNumeracaoDialog"
+				id="Numeracao-dialog" resizable="false" modal="true"
+				closeOnEscape="true">
+
+				<p:messages id="msgs-dialog" />
+				<p:defaultCommand target="salvar-button" scope="Numeracao-dialog" />
+
+				<h:panelGrid columns="2" id="painel-dialog">
+					<p:outputLabel value="Ano" for="idAno" />
+					<p:inputMask id="idAno" size="10" maxlength="10" mask = "?9999"
+						readonly="false"
+						value="#{NumeracaoVisitaBean.numeracaoVisitaEdicao.ano}" />
+
+					<p:outputLabel value="Último Número" for="Ult" />
+					<p:inputMask id="Ult" size="60" maxlength="120" mask = "?999999"
+						required="true" value="#{NumeracaoVisitaBean.numeracaoVisitaEdicao.ultimoRelatorio}" />
+					<p:outputLabel />
+					<p:commandButton value="Salvar" id="salvar-button"
+						action="#{NumeracaoVisitaBean.salvar}" process="Numeracao-dialog"
+						update="msgs-dialog painel-dialog"
+						oncomplete="if (!args.validationFailed) PF('edicaoNumeracaoDialog').hide()" />
+				</h:panelGrid>
+			</p:dialog>
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

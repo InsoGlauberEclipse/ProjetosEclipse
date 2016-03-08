@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/templates/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+
+			<f:viewAction action="#{ProdutoBean.consultar}" />
+
+		</f:metadata>
+
+		<h1>Manutenção de Produtos</h1>
+
+		<h:form id="frm">
+			<p:ajaxStatus styleClass="ajax-status">
+				<f:facet name="start">
+					<h:graphicImage library="inso" name="carregando.gif" />
+				</f:facet>
+				<f:facet name="complete">
+					<h:outputText value="" />
+				</f:facet>
+			</p:ajaxStatus>
+
+			<p:messages id="msgs" />
+
+			<p:toolbar id="toolbar">
+
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						title="Novo registro."
+						action="#{ProdutoBean.prepararNovoCadastro}" process="@this"
+						update="Produto-dialog"
+						oncomplete="PF('edicaoProdutoDialog').show()">
+						<p:resetInput target="Produto-dialog" />
+					</p:commandButton>
+
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:commandButton icon="ui-icon-pencil" title="Editar registro."
+						process="@this" update="Produto-dialog"
+						oncomplete="PF('edicaoProdutoDialog').show()"
+						disabled="#{ProdutoBean.produtoSelecionado == null}">
+						<p:resetInput target="Produto-dialog" />
+
+						<f:setPropertyActionListener
+							value="#{ProdutoBean.produtoSelecionado}"
+							target="#{ProdutoBean.produtoEdicao}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" title="Excluir registro."
+						process="@this" update="Produto-table msgs toolbar"
+						action="#{ProdutoBean.excluir}"
+						disabled="#{ProdutoBean.produtoSelecionado == null}">
+
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão"
+							message="Tem certeza que deseja excluir o Registro?" />
+
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-arrowthick-1-s"
+						title="Exportar para XLS" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:dataTable value="#{ProdutoBean.todosProduto}" var="Prod"
+				widgetVar="Produto-table" emptyMessage="Nenhum registro encontrado."
+				rows="10" paginator="true" paginatorPosition="bottom"
+				style="margin-top: 10px" id="Produto-table"
+				selection="#{ProdutoBean.produtoSelecionado}" selectionMode="single"
+				rowKey="#{Prod.id}">
+
+				<p:ajax event="rowSelect" update=":frm:toolbar" />
+				<p:ajax event="rowUnselect" update=":frm:toolbar" />
+				<p:column headerText="Código" sortBy="#{Prod.id}" width="250">
+					<h:outputText value="#{Prod.id}" />
+				</p:column>
+				<p:column headerText="Produto" sortBy="#{Prod.produto}"
+					filterBy="#{Prod.produto}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Prod.produto}" />
+				</p:column>
+				<p:column headerText="Versão" sortBy="#{Prod.versao}">
+					<h:outputText value="#{Prod.versao}" />
+				</p:column>
+				<p:column headerText="Release" sortBy="#{Prod.release}">
+					<h:outputText value="#{Prod.release}" />
+				</p:column>
+				<p:column headerText="Build" sortBy="#{Prod.build}">
+					<h:outputText value="#{Prod.build}" />
+				</p:column>
+				<p:column headerText="Observação">
+					<h:outputText value="#{Prod.observacao}" />
+				</p:column>
+
+			</p:dataTable>
+
+			<p:dialog header="Edição de Produto" widgetVar="edicaoProdutoDialog"
+				id="Produto-dialog" resizable="false" modal="true"
+				closeOnEscape="true">
+
+				<p:messages id="msgs-dialog" />
+				<p:defaultCommand target="salvar-button" scope="Produto-dialog" />
+
+				<h:panelGrid columns="2" id="painel-dialog">
+
+					<p:outputLabel value="Código" for="idProduto" />
+					<p:inplace id="ajax" editor="false" toggleable="false">
+						<p:inputText id="idProduto" size="10" maxlength="10"
+							readonly="true" value="#{ProdutoBean.produtoEdicao.id}" />
+					</p:inplace>
+
+
+					<p:outputLabel value="Produto" for="Prod" />
+					<p:inputText id="Prod" size="60" maxlength="120" required="true"
+						value="#{ProdutoBean.produtoEdicao.produto}" />
+
+					<p:outputLabel value="Versão" for="Versao" />
+					<p:inputText id="Versao" size="60" maxlength="120" required="true"
+						value="#{ProdutoBean.produtoEdicao.versao}" />
+
+					<p:outputLabel value="Release" for="release" />
+					<p:inputText id="release" size="60" maxlength="120"
+						required="false" value="#{ProdutoBean.produtoEdicao.release}" />
+
+					<p:outputLabel value="Build" for="build" />
+					<p:inputText id="build" value="#{ProdutoBean.produtoEdicao.build}" />
+
+					<p:outputLabel value="Observação" for="obs" />
+					<p:editor id="obs" widgetVar="obsWidget"
+						value="#{ProdutoBean.produtoEdicao.observacao}" width="600" />
+
+
+					<p:commandButton value="Salvar" id="salvar-button"
+						action="#{ProdutoBean.salvar}" process="Produto-dialog"
+						update="msgs-dialog painel-dialog"
+						oncomplete="if (!args.validationFailed) PF('edicaoProdutoDialog').hide()" />
+
+				</h:panelGrid>
+			</p:dialog>
+		</h:form>
+
+	</ui:define>
+</ui:composition>

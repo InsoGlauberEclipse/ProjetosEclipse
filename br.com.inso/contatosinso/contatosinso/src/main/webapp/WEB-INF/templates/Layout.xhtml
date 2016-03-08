@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta charset="UTF-8" />
+
+	<h:outputStylesheet library="inso" name="estilo.css" />
+
+	<style>
+
+.ajax-status {
+	width: 35px;
+	height: 35px;
+	position: fixed;
+	right: 10px;
+	top: 60px;
+}
+
+
+.espaco-menu-principal {
+	padding-left: 20px;
+}
+
+
+</style>
+
+
+	<script>
+		PrimeFaces.locales['pt'] = {
+			closeText : 'Fechar',
+			prevText : 'Anterior',
+			nextText : 'PrÃ³ximo',
+			currentText : 'ComeÃ§o',
+			monthNames : [ 'Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio',
+					'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro',
+					'Novembro', 'Dezembro' ],
+			monthNamesShort : [ 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+					'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez' ],
+			dayNames : [ 'Domingo', 'Segunda', 'TerÃ§a', 'Quarta', 'Quinta',
+					'Sexta', 'SÃ¡bado' ],
+			dayNamesShort : [ 'Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'SÃ¡b' ],
+			dayNamesMin : [ 'D', 'S', 'T', 'Q', 'Q', 'S', 'S' ],
+			weekHeader : 'Semana',
+			firstDay : 0,
+			isRTL : false,
+			showMonthAfterYear : false,
+			yearSuffix : '',
+			timeOnlyTitle : 'SÃ³ Horas',
+			timeText : 'Tempo',
+			hourText : 'Hora',
+			minuteText : 'Minuto',
+			secondText : 'Segundo',
+			ampm : false,
+			month : 'MÃªs',
+			week : 'Semana',
+			day : 'Dia',
+			allDayText : 'Todo o Dia'
+		};
+	</script>
+	<h:outputScript library="js" name="jquery.maskMoney.js" />
+	<h:outputScript name="validadores.js" />
+</h:head>
+<h:body>
+	<p:ajaxStatus styleClass="ajax-status" onsuccess="configurarMoeda()">
+		<f:facet name="start">
+			<h:graphicImage library="inso" name="carregando.gif" />
+		</f:facet>
+		<f:facet name="complete">
+			<h:outputText value="" />
+		</f:facet>
+	</p:ajaxStatus>
+
+	<header>
+		<h:graphicImage library="inso" name="logoinso.gif" />
+	</header>
+	<div id="divMenu">
+		<h:form id="formMenu">
+			<p:menubar  styleClass="espaco-menu-principal">
+				<p:submenu label="Cadastros" icon="ui-icon-document">
+					<p:submenu label="Tabelas Auxiliares" icon="ui-icon-contact">
+						<p:menuitem value="Ambiente Operacional"
+							url="/manutencao/AmbienteOperacional.xhtml" />
+						<p:menuitem value="Aplicações" url="/manutencao/Aplicacao.xhtml" />
+						<p:menuitem value="Cargos" url="/manutencao/Cargo.xhtml" />
+						<p:menuitem value="Departamentos"
+							url="/manutencao/Departamento.xhtml" />
+						<p:menuitem value="Foco" url="/manutencao/Foco.xhtml" />
+						<p:menuitem value="Funcionarios"
+							url="/manutencao/DesenvConsult.xhtml" />
+						<p:menuitem value="Gerentes" url="/manutencao/GerenteConta.xhtml" />
+						<p:menuitem value="Linguagens" url="/manutencao/Linguagem.xhtml" />
+						<p:menuitem value="Origem do Contato"
+							url="/manutencao/OrigemContato.xhtml" />
+						<p:menuitem value="Produtos" url="/manutencao/Produto.xhtml" />
+						<p:menuitem value="Ramos de Atividade"
+							url="/manutencao/RamosAtividade.xhtml" />
+						<p:menuitem value="Status" url="/manutencao/Status.xhtml" />
+					</p:submenu>
+					<p:separator />
+					<p:menuitem value="Clientes" url="/manutencao/Clientes.xhtml" />
+					<p:separator />
+					<p:menuitem value="Controle Boletos Taxi"
+						url="/manutencao/BoletosTaxi.xhtml" />
+					<p:separator />
+					<p:menuitem value="Formulário de Visitas" url="/manutencao/Visitas.xhtml" />
+				</p:submenu>
+
+				<p:submenu label="Consultas" icon="ui-icon-search">
+					<p:menuitem value="Clientes" url="#"
+						icon="ui-icon-arrowreturnthick-1-w" />
+					<p:menuitem value="Boletos de Taxi" url="#"
+						icon="ui-icon-arrowreturnthick-1-e" />
+				</p:submenu>
+
+				<p:submenu label="Relatórios" icon="ui-icon-print">
+					<p:submenu label="Tabelas Auxiliares" icon="ui-icon-contact">
+						<p:menuitem value="Ambiente Operacional" url="" />
+						<p:menuitem value="Aplicações" url="" />
+						<p:menuitem value="Cargos" url="" />
+						<p:menuitem value="Departamentos" url="" />
+						<p:menuitem value="Foco" url="" />
+						<p:menuitem value="Funcionarios"
+							url="/manutencao/DesenvConsult.xhtml" />
+						<p:menuitem value="Gerentes" url="" />
+						<p:menuitem value="Linguagens" url="" />
+						<p:menuitem value="Origem do Contato" url="" />
+						<p:menuitem value="Produtos" url="" />
+						<p:menuitem value="Ramos de Atividade" url="" />
+						<p:menuitem value="Status" url="" />
+					</p:submenu>
+					<p:separator />
+					<p:submenu label="Clientes" icon="ui-icon-contact">
+						<p:menuitem value="Tipo Lista Telefônica" url="" />
+						<p:separator />
+						<p:menuitem value="Tipo Ficha Cadastral" url="" />
+					</p:submenu>
+					<p:separator />
+					<p:submenu label="Relatório de Visitas" icon="ui-icon-contact">
+						<p:menuitem value="Imprimir Formulário de Visita" url="" />
+						<p:separator />
+						<p:menuitem value="Relatório para Conferência" url="" />
+					</p:submenu>
+
+
+
+				</p:submenu>
+
+				<p:submenu label="Ferramentas" icon="ui-icon-key">
+					<p:menuitem value="Usuarios / Permissões" url="#"
+						icon="ui-icon-locked" />
+  				    <p:menuitem value="Numeração do Formulário de Visitas"
+							url="/manutencao/NumeracaoVisita.xhtml" />
+
+				</p:submenu>
+
+				<p:submenu label="Ajuda" icon="ui-icon-lightbulb">
+					<p:menuitem value="Conteúdo" url="#" />
+					<p:submenu label="Search" icon="ui-icon-search">
+						<p:submenu label="Text">
+							<p:menuitem value="Workspace" url="#" />
+						</p:submenu>
+						<p:menuitem value="File" url="#" />
+					</p:submenu>
+				</p:submenu>
+				<p:menuitem value="Sair" url="http://www.primefaces.org"
+					icon="ui-icon-close" />
+
+				<f:facet name="options">
+					<p:inputText style="margin-right:10px" placeholder="Search" />
+					<p:commandButton type="button" value="Logout"
+						icon="ui-icon-extlink" />
+				</f:facet>
+			</p:menubar>
+		</h:form>
+		<br></br>
+
+	</div>
+
+	<div id="conteudo">
+		<ui:insert name="corpo" />
+	</div>
+
+	<footer> CONTROLE INTERNO - INSO </footer>
+
+	<script>
+		function configurarMoeda() {
+			$(".moeda").maskMoney({
+				decimal : ",",
+				thousands : ".",
+				allowZero : true
+			});
+		}
+
+		$(document).ready(function() {
+			configurarMoeda();
+		});
+	</script>
+
+
+	<h:form>
+		<p:confirmDialog global="true">
+			<p:commandButton value="Não" type="button"
+				styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+
+			<p:commandButton value="Sim" type="button"
+				styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+		</p:confirmDialog>
+
+
+
+	</h:form>
+
+</h:body>
+</html>

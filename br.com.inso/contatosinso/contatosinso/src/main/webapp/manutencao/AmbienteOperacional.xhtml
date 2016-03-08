@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/templates/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+
+			<f:viewAction action="#{AmbienteOperacionalBean.consultar}" />
+
+		</f:metadata>
+
+		<h1>Manutenção de Ambiente Operacional</h1>
+
+		<h:form id="frm">
+			<p:ajaxStatus styleClass="ajax-status">
+				<f:facet name="start">
+					<h:graphicImage library="inso" name="carregando.gif" />
+				</f:facet>
+				<f:facet name="complete">
+					<h:outputText value="" />
+				</f:facet>
+			</p:ajaxStatus>
+
+			<p:messages id="msgs" />
+
+			<p:toolbar id="toolbar">
+
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						action="#{AmbienteOperacionalBean.prepararNovoCadastro}"
+						process="@this" update="AmbienteOperacional-dialog"
+						oncomplete="PF('edicaoAmbienteOperacionalDialog').show()">
+						<p:resetInput target="AmbienteOperacional-dialog" />
+					</p:commandButton>
+
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:commandButton icon="ui-icon-pencil" title="Editar"
+						process="@this" update="AmbienteOperacional-dialog"
+						oncomplete="PF('edicaoAmbienteOperacionalDialog').show()"
+						disabled="#{AmbienteOperacionalBean.ambienteSelecionado == null}">
+						<p:resetInput target="AmbienteOperacional-dialog" />
+
+						<f:setPropertyActionListener
+							value="#{AmbienteOperacionalBean.ambienteSelecionado}"
+							target="#{AmbienteOperacionalBean.ambienteEdicao}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" title="Excluir"
+						process="@this" update="AmbienteOperacionals-table msgs toolbar"
+						action="#{AmbienteOperacionalBean.excluir}"
+						disabled="#{AmbienteOperacionalBean.ambienteSelecionado == null}">
+
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão"
+							message="Tem certeza que deseja excluir o Ambiente Operacional?" />
+
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-arrowthick-1-s"
+						title="Exportar para XLS" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:dataTable value="#{AmbienteOperacionalBean.todosAmbientes}"
+				var="AmbienteOperacional"
+				emptyMessage="Nenhum Ambiente Operacional cadastrado." rows="10"
+				paginator="true" paginatorPosition="bottom" style="margin-top: 10px"
+				id="AmbienteOperacionals-table"
+				selection="#{AmbienteOperacionalBean.ambienteSelecionado}"
+				selectionMode="single" rowKey="#{AmbienteOperacional.idAmbiente}">
+
+				<p:ajax event="rowSelect" update=":frm:toolbar" />
+				<p:ajax event="rowUnselect" update=":frm:toolbar" />
+
+				<p:column headerText="Código"
+					sortBy="#{AmbienteOperacional.idAmbiente}" width="250">
+					<h:outputText value="#{AmbienteOperacional.idAmbiente}" />
+				</p:column>
+				<p:column headerText="Ambiente Operacional"
+					sortBy="#{AmbienteOperacional.ambiente}"
+					filterBy="#{AmbienteOperacional.ambiente}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{AmbienteOperacional.ambiente}" />
+				</p:column>
+			</p:dataTable>
+
+			<p:dialog header="Edição de Ambiente Operacional"
+				widgetVar="edicaoAmbienteOperacionalDialog"
+				id="AmbienteOperacional-dialog" resizable="false" modal="true"
+				closeOnEscape="true">
+
+				<p:messages id="msgs-dialog" />
+				<p:defaultCommand target="salvar-button"
+					scope="AmbienteOperacional-dialog" />
+
+				<h:panelGrid columns="2" id="painel-dialog">
+					<p:outputLabel value="Código" for="IdAmbiente" />
+					<p:inplace id="ajax" editor="false" toggleable="false">
+						<p:inputText id="IdAmbiente" size="10" maxlength="10"
+							readonly="false"
+							value="#{AmbienteOperacionalBean.ambienteEdicao.idAmbiente}" />
+					</p:inplace>
+					<p:outputLabel value="Ambiente Operacional"
+						for="AmbienteOperacional" />
+					<p:inputText id="AmbienteOperacional" size="60" maxlength="120"
+						required="true"
+						value="#{AmbienteOperacionalBean.ambienteEdicao.ambiente}" />
+					<p:outputLabel />
+					<p:commandButton value="Salvar" id="salvar-button"
+						action="#{AmbienteOperacionalBean.salvar}"
+						process="AmbienteOperacional-dialog"
+						update="msgs-dialog painel-dialog"
+						oncomplete="if (!args.validationFailed) PF('edicaoAmbienteOperacionalDialog').hide()" />
+				</h:panelGrid>
+			</p:dialog>
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/templates/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+
+			<f:viewAction action="#{GerenteBean.consultar}" />
+
+		</f:metadata>
+
+		<h1>Manutenção de Gerentes</h1>
+
+		<h:form id="frm">
+			<p:ajaxStatus styleClass="ajax-status">
+				<f:facet name="start">
+					<h:graphicImage library="inso" name="carregando.gif" />
+				</f:facet>
+				<f:facet name="complete">
+					<h:outputText value="" />
+				</f:facet>
+			</p:ajaxStatus>
+
+			<p:messages id="msgs" />
+
+			<p:toolbar id="toolbar">
+
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						title="Novo registro."
+						action="#{GerenteBean.prepararNovoCadastro}" process="@this"
+						update="Gerente-dialog"
+						oncomplete="PF('edicaoGerenteDialog').show()">
+						<p:resetInput target="Gerente-dialog" />
+					</p:commandButton>
+
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:commandButton icon="ui-icon-pencil" title="Editar registro."
+						process="@this" update="Gerente-dialog"
+						oncomplete="PF('edicaoGerenteDialog').show()"
+						disabled="#{GerenteBean.gerenteSelecionado == null}">
+						<p:resetInput target="Gerente-dialog" />
+
+						<f:setPropertyActionListener
+							value="#{GerenteBean.gerenteSelecionado}"
+							target="#{GerenteBean.gerenteEdicao}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" title="Excluir registro."
+						process="@this" update="Gerentes-table msgs toolbar"
+						action="#{GerenteBean.excluir}"
+						disabled="#{GerenteBean.gerenteSelecionado == null}">
+
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão"
+							message="Tem certeza que deseja excluir o Registro?" />
+
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-arrowthick-1-s"
+						title="Exportar para XLS" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:dataTable value="#{GerenteBean.todosGerentes}" var="Gerente"
+				widgetVar="Gerentes-table"
+				emptyMessage="Nenhum registro encontrado." rows="10"
+				paginator="true" paginatorPosition="bottom" style="margin-top: 10px"
+				id="Gerentes-table" selection="#{GerenteBean.gerenteSelecionado}"
+				selectionMode="single" rowKey="#{Gerente.idGerente}">
+
+				<p:ajax event="rowSelect" update=":frm:toolbar" />
+				<p:ajax event="rowUnselect" update=":frm:toolbar" />
+				<p:column headerText="Código" sortBy="#{Gerente.idGerente}"
+					width="250">
+					<h:outputText value="#{Gerente.idGerente}" />
+				</p:column>
+				<p:column headerText="Gerente" sortBy="#{Gerente.gerente}"
+					filterBy="#{Gerente.gerente}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Gerente.gerente}" />
+				</p:column>
+			</p:dataTable>
+
+			<p:dialog header="Edição de Gerente" widgetVar="edicaoGerenteDialog"
+				id="Gerente-dialog" resizable="false" modal="true"
+				closeOnEscape="true">
+
+				<p:messages id="msgs-dialog" />
+				<p:defaultCommand target="salvar-button" scope="Gerente-dialog" />
+
+				<h:panelGrid columns="2" id="painel-dialog">
+					<p:outputLabel value="Código" for="idGerente" />
+					<p:inplace id="ajax" editor="false" toggleable="false">
+						<p:inputText id="idGerente" size="10" maxlength="10"
+							readonly="true" visible="true" enable="false"
+							value="#{GerenteBean.gerenteEdicao.idGerente}" />
+					</p:inplace>
+					<p:outputLabel value="Gerente" for="Gerente" />
+					<p:inputText id="Gerente" size="60" maxlength="120" required="true"
+						value="#{GerenteBean.gerenteEdicao.gerente}" />
+					<p:outputLabel />
+					<p:commandButton value="Salvar" id="salvar-button"
+						action="#{GerenteBean.salvar}" process="Gerente-dialog"
+						update="msgs-dialog painel-dialog"
+						oncomplete="if (!args.validationFailed) PF('edicaoGerenteDialog').hide()" />
+				</h:panelGrid>
+			</p:dialog>
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

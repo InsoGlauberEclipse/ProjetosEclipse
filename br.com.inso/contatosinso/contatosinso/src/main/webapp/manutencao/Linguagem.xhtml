@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/templates/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+
+			<f:viewAction action="#{LinguagemBean.consultar}" />
+
+		</f:metadata>
+
+		<h1>Manutenção de Linguagens</h1>
+
+		<h:form id="frm">
+			<p:ajaxStatus styleClass="ajax-status">
+				<f:facet name="start">
+					<h:graphicImage library="inso" name="carregando.gif" />
+				</f:facet>
+				<f:facet name="complete">
+					<h:outputText value="" />
+				</f:facet>
+			</p:ajaxStatus>
+
+			<p:messages id="msgs" />
+
+			<p:toolbar id="toolbar">
+
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						title="Novo registro."
+						action="#{LinguagemBean.prepararNovoCadastro}" process="@this"
+						update="Linguagem-dialog"
+						oncomplete="PF('edicaoLinguagemDialog').show()">
+						<p:resetInput target="Linguagem-dialog" />
+					</p:commandButton>
+
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:commandButton icon="ui-icon-pencil" title="Editar registro."
+						process="@this" update="Linguagem-dialog"
+						oncomplete="PF('edicaoLinguagemDialog').show()"
+						disabled="#{LinguagemBean.linguagemSelecionado == null}">
+						<p:resetInput target="Linguagem-dialog" />
+
+						<f:setPropertyActionListener
+							value="#{LinguagemBean.linguagemSelecionado}"
+							target="#{LinguagemBean.linguagemEdicao}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" title="Excluir registro."
+						process="@this" update="Linguagens-table msgs toolbar"
+						action="#{LinguagemBean.excluir}"
+						disabled="#{LinguagemBean.linguagemSelecionado == null}">
+
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão"
+							message="Tem certeza que deseja excluir o Registro?" />
+
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-arrowthick-1-s"
+						title="Exportar para XLS" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:dataTable value="#{LinguagemBean.todosLinguagens}" var="Linguas"
+				widgetVar="Linguagens-table"
+				emptyMessage="Nenhum registro encontrado." rows="10"
+				paginator="true" paginatorPosition="bottom" style="margin-top: 10px"
+				id="Linguagens-table"
+				selection="#{LinguagemBean.linguagemSelecionado}"
+				selectionMode="single" rowKey="#{Linguas.idLinguagem}">
+
+				<p:ajax event="rowSelect" update=":frm:toolbar" />
+				<p:ajax event="rowUnselect" update=":frm:toolbar" />
+				<p:column headerText="Código" sortBy="#{Linguas.idLinguagem}"
+					width="250">
+					<h:outputText value="#{Linguas.idLinguagem}" />
+				</p:column>
+				<p:column headerText="Linguagem" sortBy="#{Linguas.linguagem}"
+					filterBy="#{Linguas.linguagem}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Linguas.linguagem}" />
+				</p:column>
+			</p:dataTable>
+
+			<p:dialog header="Edição de Linguagem" widgetVar="edicaoLinguagemDialog"
+				id="Linguagem-dialog" resizable="false" modal="true"
+				closeOnEscape="true">
+
+				<p:messages id="msgs-dialog" />
+				<p:defaultCommand target="salvar-button" scope="Linguagem-dialog" />
+
+				<h:panelGrid columns="2" id="painel-dialog">
+					<p:outputLabel value="Código" for="txtidLingua" />
+					<p:inputText id="txtidLingua" size="10" maxlength="10"
+						value="#{LinguagemBean.linguagemEdicao.idLinguagem}" />
+					<p:outputLabel value="Linguagem" for="txtLingua" />
+					<p:inputText id="txtLingua" size="60" maxlength="120"
+						required="true" value="#{LinguagemBean.linguagemEdicao.linguagem}" />
+					<p:outputLabel />
+					<p:commandButton value="Salvar" id="salvar-button"
+						action="#{LinguagemBean.salvar}" process="Linguagem-dialog"
+						update="msgs-dialog painel-dialog"
+						oncomplete="if (!args.validationFailed) PF('edicaoLinguagemDialog').hide()" />
+				</h:panelGrid>
+			</p:dialog>
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/templates/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewAction action="#{VisitasBean.consultar}" />
+		</f:metadata>
+
+		<h1>Manutenção de Visitas</h1>
+
+		<h:form id="frm" name="frm">
+			<p:ajaxStatus styleClass="ajax-status">
+				<f:facet name="start">
+					<h:graphicImage library="inso" name="carregando.gif" />
+				</f:facet>
+				<f:facet name="complete">
+					<h:outputText value="" />
+				</f:facet>
+			</p:ajaxStatus>
+
+			<p:messages id="msgs" />
+
+
+			<p:toolbar id="toolbar">
+
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						title="Novo registro."
+						action="#{VisitasBean.prepararNovoCadastro}" process="@this"
+						update="frm:Visitas-dialog"
+						oncomplete="PF('edicaoVisitasDialog').show()">
+						<p:resetInput target="frm:Visitas-dialog" />
+					</p:commandButton>
+
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:commandButton icon="ui-icon-pencil" title="Editar registro."
+						process="@this" update="frm:Visitas-dialog"
+						oncomplete="PF('edicaoVisitasDialog').show()"
+						disabled="#{VisitasBean.objetoSelecionado == null}">
+						<p:resetInput target="frm:Visitas-dialog" />
+
+						<f:setPropertyActionListener
+							value="#{VisitasBean.objetoSelecionado}"
+							target="#{VisitasBean.objetoEdicao}" />
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" title="Excluir registro."
+						process="@this"
+						update="frm:Visitas-table frm:msgs-dialog frm:toolbar"
+						action="#{VisitasBean.excluir}"
+						disabled="#{VisitasBean.objetoSelecionado == null}">
+
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão"
+							message="Tem certeza que deseja excluir o Registro?" />
+
+					</p:commandButton>
+
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:commandButton value="Imprimir Relatório de Visita"
+						icon="ui-icon-print"
+						title="Imprime o formulário para acompanhamento na visita."
+						id="btnRelVisita" process="@this" update="frm:Visitas-dialog"
+						oncomplete="PF('edicaoVisitasDialog').show()"
+						disabled="#{VisitasBean.objetoSelecionado == null}">
+						<p:resetInput target="frm:Visitas-dialog" />
+
+						<f:setPropertyActionListener
+							value="#{VisitasBean.objetoSelecionado}"
+							target="#{VisitasBean.objetoEdicao}" />
+					</p:commandButton>
+
+
+					<p:commandButton icon="ui-icon-arrowthick-1-s"
+						title="Exportar para XLS" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:dataTable value="#{VisitasBean.todasVisitas}" var="Visita"
+				widgetVar="Visitas-table" emptyMessage="Nenhum registro encontrado."
+				rows="15" paginator="true" paginatorPosition="bottom"
+				scrollable="true" style="margin-top: 10px" id="Visitas-table"
+				selection="#{VisitasBean.objetoSelecionado}" selectionMode="single"
+				rowKey="#{Visita.idVisita}">
+
+				<p:ajax event="rowSelect" update=":frm:toolbar" />
+				<p:ajax event="rowUnselect" update=":frm:toolbar" />
+
+
+				<p:column headerText="Nº Relatório"
+					sortBy="#{Visita.relatorioNumero}" width="60"
+					filterBy="#{Visita.relatorioNumero}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Visita.relatorioNumero}" />
+				</p:column>
+
+
+				<p:column headerText="Data" sortBy="#{Visita.data}" width="60"
+					filterBy="#{Visita.data}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Visita.data}" />
+				</p:column>
+
+
+				<p:column headerText="Cliente"
+					sortBy="#{Visita.cliente.razaoSocial}" width="300"
+					filterBy="#{Visita.cliente.razaoSocial}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Visita.cliente.razaoSocial}" />
+				</p:column>
+
+
+				<p:column headerText="Endereco" sortBy="#{Visita.endereco}"
+					width="60" filterBy="#{Visita.data}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Visita.endereco}" />
+				</p:column>
+
+
+				<p:column headerText="Consultor" sortBy="#{Visita.funcionario.nome}"
+					width="300" filterBy="#{Visita.funcionario.nome}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Visita.funcionario.nome}" />
+				</p:column>
+
+
+			</p:dataTable>
+
+
+			<p:dialog header="Edição de Visita" widgetVar="edicaoVisitasDialog"
+				id="Visitas-dialog" name="Visitas-dialog" resizable="false"
+				modal="true" closeOnEscape="true" width="1283px" height="530px">
+
+				<p:messages id="msgs-dialog" name="msgs-dialog" />
+				<p:defaultCommand target="frm:salvar-button" scope="Visitas-dialog" />
+
+
+				<p:tabView id="tab-view-Visitas" name="tab-view-Visitas">
+					<p:tab id="informacoes-principais" name="informacoes-principais"
+						title="Informações Principais" style="margin-bottom:20px">
+						<h:panelGrid columns="2" id="painel-dialog" name="painel-dialog">
+
+							<p:outputLabel value="Código Interno" for="idVisitaInterno" />
+							<p:inplace id="ajax" editor="false" toggleable="false">
+								<p:inputText id="idVisitaInterno" size="10" maxlength="10"
+									readonly="true" visible="true"
+									value="#{VisitasBean.objetoEdicao.idVisita}" />
+							</p:inplace>
+
+
+							<p:outputLabel value="Código Visita" for="idVisita" />
+							<p:inputMask id="idVisita" size="20" maxlength="20"
+								mask="?999999" readonly="false" visible="true" enable="true"
+								required="true"
+								value="#{VisitasBean.objetoEdicao.relatorioNumero}" />
+
+
+
+
+							<p:outputLabel value="Cliente" for="clisel" />
+							<p:selectOneMenu id="clisel" filter="true" required="true"
+								value="#{VisitasBean.objetoEdicao.cliente}">
+								<f:selectItem itemLabel="Selecione" />
+								<f:selectItems value="#{VisitasBean.todosClientes}" var="cli"
+									itemLabel="#{cli.razaoSocial}" itemValue="#{cli}" />
+							</p:selectOneMenu>
+
+
+							<p:outputLabel value="Endereço" for="endeAtend" />
+							<p:inputText id="endeAtend" size="50" maxlength="50"
+								required="true" readonly="false" visible="true" enable="true"
+								value="#{VisitasBean.objetoEdicao.endereco}" />
+
+
+							<p:outputLabel value="Produto" for="produt" />
+							<p:selectOneMenu id="produt" filter="true"
+								value="#{VisitasBean.objetoEdicao.produto}" required="true">
+								<f:selectItem itemLabel="Selecione" />
+								<f:selectItems value="#{VisitasBean.todosProdutos}" var="prod"
+									itemLabel="#{prod.produto}" itemValue="#{prod}" />
+							</p:selectOneMenu>
+
+
+							<p:outputLabel value="Consultor" for="consult" />
+							<p:selectOneMenu id="consult" filter="true"
+								value="#{VisitasBean.objetoEdicao.funcionario}" required="true">
+								<f:selectItem itemLabel="Selecione" />
+								<f:selectItems value="#{VisitasBean.todosDesenvolv}" var="fun"
+									itemLabel="#{fun.nome}" itemValue="#{fun}" />
+							</p:selectOneMenu>
+
+
+							<p:outputLabel value="Data" for="dataVisita" />
+							<p:calendar id="dataVisita" pattern="dd/MM/yyyy"
+								mask="99/99/9999" required="true"
+								value="#{VisitasBean.objetoEdicao.data}" locale="pt" />
+
+
+
+							<p:outputLabel value="Hora Inicial" for="hrinic1" />
+							<p:inputMask id="hrinic1" size="10" maxlength="10"
+								readonly="false" visible="true" mask="?99:99"
+								value="#{VisitasBean.objetoEdicao.hrInicial1}" />
+
+
+							<p:outputLabel value="Hora Final" for="hrfinal1" />
+							<p:inputMask id="hrfinal1" size="10" maxlength="10"
+								readonly="false" visible="true" mask="?99:99"
+								value="#{VisitasBean.objetoEdicao.hrFinal1}" />
+
+
+							<p:outputLabel value="Hora Inicial" for="hrinic2" />
+							<p:inputMask id="hrinic2" size="10" maxlength="10"
+								readonly="false" visible="true" mask="?99:99"
+								value="#{VisitasBean.objetoEdicao.hrInicial2}" />
+
+
+							<p:outputLabel value="Hora Final" for="hrfinal2" />
+							<p:inputMask id="hrfinal2" size="10" maxlength="10"
+								readonly="false" visible="true" mask="?99:99"
+								value="#{VisitasBean.objetoEdicao.hrFinal2}" />
+
+
+							<p:outputLabel value="Hora Inicial" for="hrinic3" />
+							<p:inputMask id="hrinic3" size="10" maxlength="10"
+								readonly="false" visible="true" mask="?99:99"
+								value="#{VisitasBean.objetoEdicao.hrInicial3}" />
+
+
+							<p:outputLabel value="Hora Final" for="hrfinal3" />
+							<p:inputMask id="hrfinal3" size="10" maxlength="10"
+								readonly="false" visible="true" mask="?99:99"
+								value="#{VisitasBean.objetoEdicao.hrFinal3}" />
+
+
+
+						</h:panelGrid>
+					</p:tab>
+
+
+					<!-- Assunto -->
+
+
+					<p:tab id="assunto" title="Assunto" style="margin-bottom:20px">
+
+						<h:panelGrid columns="2" id="painel-dialog-assunto">
+							<p:editor id="txtassunto" widgetVar="assuntoWidget"
+								value="#{VisitasBean.objetoEdicao.assunto}" width="600" />
+
+						</h:panelGrid>
+
+
+					</p:tab>
+
+
+					<!-- Atividades Desenvolvidas -->
+
+
+					<p:tab id="atividades-desenvolvidas"
+						title="Atividades Desenvolvidas" style="margin-bottom:20px">
+
+						<h:panelGrid columns="2"
+							id="painel-dialog-atividades-desenvolvidas">
+							<p:editor id="txtatividades" widgetVar="ativWidget"
+								value="#{VisitasBean.objetoEdicao.atividadesEnvolvida}"
+								width="600" />
+
+						</h:panelGrid>
+					</p:tab>
+
+
+					<!-- Pendencias e comentários -->
+
+
+					<p:tab id="pendenciastab" title="Pendências e Comentários"
+						style="margin-bottom:20px">
+
+						<h:panelGrid columns="2" id="painel-dialog-pendencias">
+							<p:editor id="pendcom" widgetVar="obsWidget"
+								value="#{VisitasBean.objetoEdicao.pendenciasComentarios}"
+								width="600" />
+
+						</h:panelGrid>
+					</p:tab>
+
+
+					<!-- Demonstrativo de Despesas -->
+
+
+					<p:tab id="despesastab" title="Demonstrativo de Despesas"
+						style="margin-bottom:20px">
+						<h:panelGrid columns="2" id="painel-dialog-demonstrativo">
+
+							<p:outputLabel value="Passagem R$" for="txtpassagem" />
+							<p:inputText id="txtpassagem" size="10" maxlength="10"
+								styleClass="moeda" value="#{VisitasBean.objetoEdicao.passagem}">
+								<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+							</p:inputText>
+
+
+							<p:outputLabel value="Taxi R$" for="txttaxi" />
+							<p:inputText id="txttaxi" size="10" maxlength="10"
+								styleClass="moeda" value="#{VisitasBean.objetoEdicao.taxi}">
+								<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+							</p:inputText>
+
+
+							<p:outputLabel value="Pedagio R$" for="txtpedagio" />
+							<p:inputText id="txtpedagio" size="10" maxlength="10"
+								styleClass="moeda" value="#{VisitasBean.objetoEdicao.pedagio}">
+								<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+							</p:inputText>
+
+
+							<p:outputLabel value="Estacionamento R$" for="txtestacionamento" />
+							<p:inputText id="txtestacionamento" size="10" maxlength="10"
+								styleClass="moeda"
+								value="#{VisitasBean.objetoEdicao.estacionamento}">
+								<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+							</p:inputText>
+
+
+							<p:outputLabel value="Combustível R$" for="txtcombus" />
+							<p:inputText id="txtcombus" size="10" maxlength="10"
+								styleClass="moeda"
+								value="#{VisitasBean.objetoEdicao.combustivel}">
+								<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+							</p:inputText>
+
+
+							<p:outputLabel value="Refeição R$" for="txtref" />
+							<p:inputText id="txtref" size="10" maxlength="10"
+								styleClass="moeda" value="#{VisitasBean.objetoEdicao.refeicao}">
+								<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+							</p:inputText>
+
+
+							<p:outputLabel value="Hotel R$" for="txthotel" />
+							<p:inputText id="txthotel" size="10" maxlength="10"
+								styleClass="moeda" value="#{VisitasBean.objetoEdicao.hotel}">
+								<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+							</p:inputText>
+
+
+							<p:outputLabel value="KM Rodado R$" for="txtkmrodado" />
+							<p:inputText id="txtkmrodado" size="10" maxlength="10"
+								styleClass="moeda" value="#{VisitasBean.objetoEdicao.hotel}">
+								<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+							</p:inputText>
+
+
+							<p:outputLabel value="Diversas R$" for="txtdiversas" />
+							<p:inputText id="txtdiversas" size="10" maxlength="10"
+								styleClass="moeda" value="#{VisitasBean.objetoEdicao.diversas}">
+								<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+							</p:inputText>
+
+
+						</h:panelGrid>
+					</p:tab>
+
+
+					<!-- Faturamento de Horas -->
+
+
+					<p:tab id="faturamentotab" title="Faturamento de Horas"
+						style="margin-bottom:20px">
+
+						<h:panelGrid columns="2" id="painel-dialog-faturamento-horas">
+
+							<p:outputLabel value="Faturar Horas ?" for="flFatura" />
+							<p:selectOneRadio id="flFatura"
+								value="#{VisitasBean.objetoEdicao.faturaHoras}">
+								<f:selectItem itemLabel="Sim" itemValue="S" />
+								<f:selectItem itemLabel="Não" itemValue="N" />
+							</p:selectOneRadio>
+
+
+							<p:outputLabel value="Qtd Horas Faturar" for="qtdhorasfat" />
+							<p:inputMask id="qtdhorasfat" size="10" maxlength="10"
+								readonly="false" visible="true" mask="?999999"
+								value="#{VisitasBean.objetoEdicao.qtdHorasFaturar}" />
+
+
+							<p:outputLabel value="Reembolso Autorizado por"
+								for="txtreembolso" />
+							<p:inputText id="txtreembolso" size="50" maxlength="50"
+								readonly="false" visible="true" enable="true"
+								value="#{VisitasBean.objetoEdicao.reembolsoAutorizacao}" />
+
+
+							<p:outputLabel value="Data da Autorização" for="dataAut" />
+							<p:calendar id="dataAut" pattern="dd/MM/yyyy" mask="99/99/9999"
+								value="#{VisitasBean.objetoEdicao.reembolsoData}" locale="pt" />
+
+
+							<p:outputLabel value="Hora Autorização" for="hraut" />
+							<p:inputMask id="hraut" size="10" maxlength="10" readonly="false"
+								visible="true" mask="?99:99"
+								value="#{VisitasBean.objetoEdicao.reembolsoHora}" />
+
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+							<p:outputLabel value="Data do Pagamento" for="dataPagto" />
+							<p:calendar id="dataPagto" pattern="dd/MM/yyyy" mask="99/99/9999"
+								value="#{VisitasBean.objetoEdicao.dataPagamento}" locale="pt" />
+
+
+						</h:panelGrid>
+					</p:tab>
+
+
+				</p:tabView>
+				<p:separator />
+				<p:outputLabel value="" />
+
+
+				<p:commandButton value="Salvar" icon="ui-icon-disk" id="salvar-button" name="salvar-button"
+					title="Salvar o registro corrente." action="#{VisitasBean.salvar}"
+					process="frm:Visitas-dialog" update="frm:msgs-dialog"
+					oncomplete="if (!args.validationFailed) PF('edicaoVisitasDialog').hide()">
+					<p:resetInput target="frm:Visitas-dialog" />
+				</p:commandButton>
+
+
+				<p:outputLabel value="" />
+
+
+
+
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

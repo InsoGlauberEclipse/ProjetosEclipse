@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<ui:composition template="/WEB-INF/templates/Layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="corpo">
+
+		<f:metadata>
+			<f:viewAction action="#{ClientesBean.consultar}" />
+		</f:metadata>
+
+		<h1>Manutenção de Clientes</h1>
+
+		<h:form id="frm" name="frm">
+			<p:ajaxStatus styleClass="ajax-status">
+				<f:facet name="start">
+					<h:graphicImage library="inso" name="carregando.gif" />
+				</f:facet>
+				<f:facet name="complete">
+					<h:outputText value="" />
+				</f:facet>
+			</p:ajaxStatus>
+
+			<p:messages id="msgs"  />
+
+
+			<p:toolbar id="toolbar">
+
+				<f:facet name="left">
+					<p:commandButton value="Novo" icon="ui-icon-document"
+						title="Novo registro." action="#{ClientesBean.prepararNovoCadastro}"
+						process="@this" update="frm:Clientes-dialog"
+						oncomplete="PF('edicaoClientesDialog').show()">
+						<p:resetInput target="frm:Clientes-dialog" />
+					</p:commandButton>
+
+					<span class="ui-separator"> <span
+						class="ui-icon ui-icon-grip-dotted-vertical" />
+					</span>
+
+					<p:commandButton icon="ui-icon-pencil" title="Editar registro." 
+						process="@this" update="frm:Clientes-dialog"
+						oncomplete="PF('edicaoClientesDialog').show()"
+						disabled="#{ClientesBean.objetoSelecionado == null}">
+						<p:resetInput target="frm:Clientes-dialog" />
+
+						<f:setPropertyActionListener
+							value="#{ClientesBean.objetoSelecionado}"
+							target="#{ClientesBean.objetoEdicao}" />
+							
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-trash" title="Excluir registro."
+						process="@this" update="frm:Clientes-table frm:msgs-dialog frm:toolbar"
+						action="#{ClientesBean.excluir}"
+						disabled="#{ClientesBean.objetoSelecionado == null}">
+
+						<p:confirm icon="ui-icon-alert" header="Confirmação de exclusão"
+							message="Tem certeza que deseja excluir o Registro?" />
+
+					</p:commandButton>
+
+					<p:commandButton icon="ui-icon-arrowthick-1-s"
+						title="Exportar para XLS" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:dataTable value="#{ClientesBean.todosClientes}" var="Cliente"
+				widgetVar="Clientes-table"
+				emptyMessage="Nenhum registro encontrado." rows="15"
+				paginator="true" paginatorPosition="bottom" scrollable="true"
+				style="margin-top: 10px" id="Clientes-table"
+				selection="#{ClientesBean.objetoSelecionado}" selectionMode="single"
+				rowKey="#{Cliente.idCliente}">
+
+				<p:ajax event="rowSelect" update=":frm:toolbar" />
+				<p:ajax event="rowUnselect" update=":frm:toolbar" />
+
+				<p:column headerText="Código Interno" sortBy="#{Cliente.idCliente}"
+					width="60" filterBy="#{Cliente.idCliente}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.idCliente}" />
+				</p:column>
+
+				<p:column headerText="Código Cliente" sortBy="#{Cliente.codigo}"
+					width="60" filterBy="#{Cliente.codigo}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Cliente.codigo}" />
+				</p:column>
+
+				<p:column headerText="Razao Social" sortBy="#{Cliente.razaoSocial}"
+					width="300" filterBy="#{Cliente.razaoSocial}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.razaoSocial}" />
+				</p:column>
+
+				<p:column headerText="Nome Fantasia" sortBy="#{Cliente.fantasia}"
+					width="200" filterBy="#{Cliente.fantasia}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.fantasia}" />
+				</p:column>
+
+				<p:column headerText="DDD" sortBy="#{Cliente.fonedd}" width="60"
+					filterBy="#{Cliente.fonedd}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Cliente.fonedd}" />
+				</p:column>
+
+				<p:column headerText="Telefone " sortBy="#{Cliente.telefone1}"
+					width="125" filterBy="#{Cliente.telefone1}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.telefone1}" />
+				</p:column>
+
+				<p:column headerText="Ramal" sortBy="#{Cliente.ramal1}" width="60"
+					filterBy="#{Cliente.ramal1}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Cliente.ramal1}" />
+				</p:column>
+
+				<p:column headerText="Endereço" sortBy="#{Cliente.endereco}"
+					width="300" filterBy="#{Cliente.endereco}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.endereco}" />
+				</p:column>
+
+				<p:column headerText="Complemento" sortBy="#{Cliente.complemento}"
+					width="125" filterBy="#{Cliente.complemento}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.complemento}" />
+				</p:column>
+
+				<p:column headerText="Bairro" sortBy="#{Cliente.bairro}" width="125"
+					filterBy="#{Cliente.bairro}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Cliente.bairro}" />
+				</p:column>
+
+				<p:column headerText="Cidade" sortBy="#{Cliente.cidade}" width="125"
+					filterBy="#{Cliente.cidade}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Cliente.cidade}" />
+				</p:column>
+
+				<p:column headerText="UF" sortBy="#{Cliente.estado}" width="60"
+					filterBy="#{Cliente.estado}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Cliente.estado}" />
+				</p:column>
+
+				<p:column headerText="CNPJ / CPF" sortBy="#{Cliente.cnpjCpf}"
+					width="125" filterBy="#{Cliente.cnpjCpf}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.cnpjCpf}" />
+				</p:column>
+
+				<p:column headerText="Insc.Estadual / RG" sortBy="#{Cliente.inscRg}"
+					width="125" filterBy="#{Cliente.inscRg}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Cliente.inscRg}" />
+				</p:column>
+
+
+				<p:column headerText="Telefone 2" sortBy="#{Cliente.telefone2}"
+					width="125" filterBy="#{Cliente.telefone2}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.telefone2}" />
+				</p:column>
+
+				<p:column headerText="Ramal 2" sortBy="#{Cliente.ramal2}" width="60"
+					filterBy="#{Cliente.ramal2}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Cliente.ramal2}" />
+				</p:column>
+
+				<p:column headerText="Fax" sortBy="#{Cliente.fax}" width="125"
+					filterBy="#{Cliente.fax}" filterMatchMode="contains"
+					footerText="contendo">
+					<h:outputText value="#{Cliente.fax}" />
+				</p:column>
+
+				<p:column headerText="Ramal Fax" sortBy="#{Cliente.ramalFax}"
+					width="60" filterBy="#{Cliente.ramalFax}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.ramalFax}" />
+				</p:column>
+
+				<p:column headerText="E-Mail" sortBy="#{Cliente.endEmail}"
+					width="300" filterBy="#{Cliente.endEmail}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.endEmail}" />
+				</p:column>
+
+				<p:column headerText="Página Web" sortBy="#{Cliente.paginaweb}"
+					width="300" filterBy="#{Cliente.paginaweb}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.paginaweb}" />
+				</p:column>
+<!-- 				
+				<p:column headerText="Origem do Contato" sortBy="#{Cliente.origemcontato.origemContato}"
+					width="300" filterBy="#{Cliente.origemcontato.origemContato}"
+					filterMatchMode="contains" footerText="contendo">
+					<h:outputText value="#{Cliente.origemcontato.origemContato}" />
+				</p:column>
+ -->				
+			</p:dataTable>
+
+
+			<p:dialog header="Edição de Cliente" widgetVar="edicaoClientesDialog"
+				id="Clientes-dialog" name="Clientes-dialog" resizable="false"
+				modal="true" closeOnEscape="true" width="1283px" height="530px">
+
+				<p:messages id="msgs-dialog" name="msgs-dialog" />
+				<p:defaultCommand target="frm:salvar-button" scope="Clientes-dialog" />
+
+
+				<p:tabView id="tab-view-clientes" name="tab-view-clientes">
+					<p:tab id="informacoes-principais" name="informacoes-principais"
+						title="Informações Principais" style="margin-bottom:20px">
+						<h:panelGrid columns="4" id="painel-dialog" name="painel-dialog">
+
+							<p:outputLabel value="Código Interno" for="idClienteInterno" />
+							<p:inplace id="ajax" editor="false" toggleable="false">
+								<p:inputText id="idClienteInterno" size="10" maxlength="10"
+									readonly="true" visible="true" 
+									value="#{ClientesBean.objetoEdicao.idCliente}" />
+							</p:inplace>
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+
+							<p:outputLabel value="Código Cliente" for="idCliente" />
+							<p:inputText id="idCliente" size="20" maxlength="20"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.codigo}" />
+
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+							<p:outputLabel value="Razao Social" for="razaoSocial" />
+							<p:inputText id="razaoSocial" size="50" maxlength="50"
+								readonly="false" visible="true" enable="true"
+								required="true"
+								value="#{ClientesBean.objetoEdicao.razaoSocial}" />
+
+							<p:outputLabel value="Nome Fantasia" for="fantasia" />
+							<p:inputText id="fantasia" size="30" maxlength="30"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.fantasia}" />
+
+							<p:outputLabel value="DDD" for="ddd" />
+							<p:inputText id="ddd" size="14" maxlength="14" readonly="false"
+								visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.fonedd}" />
+
+							<p:outputLabel value="Telefone 1" for="telefone1" />
+							<p:inputText id="telefone1" size="10" maxlength="10"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.telefone1}" />
+
+							<p:outputLabel value="Ramal " for="ramal1" />
+							<p:inputText id="ramal1" size="10" maxlength="10"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.ramal1}" />
+
+							<p:outputLabel value="Telefone 2" for="telefone2" />
+							<p:inputText id="telefone2" size="10" maxlength="10"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.telefone2}" />
+
+							<p:outputLabel value="Ramal 2" for="ramal2" />
+							<p:inputText id="ramal2" size="10" maxlength="10"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.ramal2}" />
+
+							<p:outputLabel value="Fax" for="fax" />
+							<p:inputText id="fax" size="10" maxlength="10" readonly="false"
+								visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.fax}" />
+
+							<p:outputLabel value="Ramal Fax" for="ramalFax" />
+							<p:inputText id="ramalFax" size="10" maxlength="10"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.ramalFax}" />
+
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+							<p:outputLabel value="Endereço" for="txtendereco" />
+							<p:inputText id="txtendereco" size="50" maxlength="50"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.endereco}" />
+
+							<p:outputLabel value="Complemento" for="complemento" />
+							<p:inputText id="complemento" size="20" maxlength="20"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.complemento}" />
+
+							<p:outputLabel value="Bairro" for="bairro" />
+							<p:inputText id="bairro" size="30" maxlength="30"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.complemento}" />
+
+							<p:outputLabel value="Cidade" for="cidade" />
+							<p:inputText id="cidade" size="30" maxlength="30"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.cidade}" />
+
+							<p:outputLabel value="Cep" for="cep" />
+							<p:inputMask id="cep" size="10" maxlength="10" mask="?99.999-999"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.cep}" />
+
+							<p:outputLabel value="Estado" for="estado" />
+							<p:inputText id="estado" size="2" maxlength="2" readonly="false"
+								visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.estado}" />
+
+							<p:outputLabel value="CNPJ / CPF" for="cnpjcpf" />
+							<p:inputText id="cnpjcpf" size="20" maxlength="20"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.cnpjCpf}" />
+
+							<p:outputLabel value="Insc.Estadual / RG" for="ierg" />
+							<p:inputText id="ierg" size="20" maxlength="20" readonly="false"
+								visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.inscRg}" />
+
+							<p:outputLabel value="E-Mail" for="e-mail" />
+							<p:inputText id="e-mail" size="100" maxlength="100"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.endEmail}" />
+
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+
+							<p:outputLabel value="Página Web" for="pagina-web" />
+							<p:inputText id="pagina-web" size="100" maxlength="100"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.paginaweb}" />
+
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+
+							<p:outputLabel value="Cliente Ativo ?" for="flAtivo" />
+							<p:selectOneRadio id="flAtivo"
+								value="#{ClientesBean.objetoEdicao.flAtivo}">
+								<f:selectItem itemLabel="Sim" itemValue="S" />
+								<f:selectItem itemLabel="Não" itemValue="N" />
+							</p:selectOneRadio>
+
+
+						</h:panelGrid>
+					</p:tab>
+
+
+					<!-- Outros Endereços -->
+
+
+					<p:tab id="outros-enderecos" title="Outros Endereços"
+						style="margin-bottom:20px">
+
+						<h:panelGrid columns="4" id="painel-dialog-outros-enderecos">
+
+							<!-- Segundo Endereço -->
+
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+
+							<p:outputLabel value="Endereco" for="endereco2" />
+							<p:inputText id="endereco2" size="50" maxlength="50"
+								readonly="true" visible="true"
+								value="#{ClientesBean.objetoEdicao.endereco2}" />
+
+							<p:outputLabel value="Bairro" for="bairro2" />
+							<p:inputText id="bairro2" size="50" maxlength="50"
+								readonly="true" visible="true"
+								value="#{ClientesBean.objetoEdicao.bairro2}" />
+
+
+							<p:outputLabel value="Cidade" for="cidade2" />
+							<p:inputText id="cidade2" size="30" maxlength="30"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.cidade2}" />
+
+							<p:outputLabel value="Cep" for="cep2" />
+							<p:inputMask id="cep2" size="10" maxlength="10"
+								mask="?99.999-999" readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.cep2}" />
+
+							<p:outputLabel value="Estado" for="estado2" />
+							<p:inputText id="estado2" size="2" maxlength="2" readonly="false"
+								visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.estado2}" />
+
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+
+							<p:outputLabel value="Endereço" for="endereco3" />
+							<p:inputText id="endereco3" size="50" maxlength="50"
+								readonly="true" visible="true"
+								value="#{ClientesBean.objetoEdicao.endereco3}" />
+
+							<p:outputLabel value="Bairro" for="bairro3" />
+							<p:inputText id="bairro3" size="50" maxlength="50"
+								readonly="true" visible="true"
+								value="#{ClientesBean.objetoEdicao.bairro3}" />
+
+
+							<p:outputLabel value="Cidade" for="cidade3" />
+							<p:inputText id="cidade3" size="30" maxlength="30"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.cidade3}" />
+
+							<p:outputLabel value="Cep" for="cep3" />
+							<p:inputMask id="cep3" size="10" maxlength="10"
+								mask="?99.999-999" readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.cep3}" />
+
+							<p:outputLabel value="Estado" for="estado3" />
+							<p:inputText id="estado3" size="2" maxlength="2" readonly="false"
+								visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.estado3}" />
+
+
+						</h:panelGrid>
+					</p:tab>
+
+
+					<!-- Informações da Conta -->
+
+
+					<p:tab id="informacoes-conta" title="Informações da Conta"
+						style="margin-bottom:20px">
+
+						<h:panelGrid columns="2" id="painel-dialog-informacoes-conta">
+
+							<!-- Segundo Endereço -->
+
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+							<p:outputLabel value="" />
+
+							<p:outputLabel value="Gerente da Conta" for="gerconta" />
+							<p:selectOneMenu id="gerconta" filter="true"
+								value="#{ClientesBean.objetoEdicao.gerenteconta}">
+								<f:selectItem itemLabel="Selecione" />
+								<f:selectItems value="#{ClientesBean.todosGerentes}" var="ger"
+									itemLabel="#{ger.gerente}" itemValue="#{ger}" />
+							</p:selectOneMenu>
+
+							<p:outputLabel value="Quantidade de Licenças" for="qtdlics" />
+							<p:inputText id="qtdlics" size="30" maxlength="30"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.qtdLicencas}" />
+
+							<p:outputLabel value="Numero de Série" for="numserie" />
+							<p:inputText id="numserie" size="10" maxlength="10"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.numeroSerie}" />
+
+							<p:outputLabel value="Codigo Milton" for="codigomilton" />
+							<p:inputText id="codigomilton" size="20" maxlength="20"
+								readonly="false" visible="true" enable="true"
+								value="#{ClientesBean.objetoEdicao.codCliMilton}" />
+
+							<p:outputLabel value="Codigo Anterior" for="codant" />
+							<p:inputText id="codant" size="20" maxlength="20" readonly="true"
+								visible="true" value="#{ClientesBean.objetoEdicao.codCliAnt}" />
+
+							<!-- 
+							<p:outputLabel value="Status" for="status" />
+							<p:inputText id="status" size="50" maxlength="50" readonly="true"
+								visible="true" value="#{ClientesBean.objetoEdicao.statusCliente}" />
+ -->
+						</h:panelGrid>
+					</p:tab>
+
+
+					<!-- Observações -->
+
+
+					<p:tab id="observacoes" title="Observações"
+						style="margin-bottom:20px">
+
+						<h:panelGrid columns="2" id="painel-dialog-observações">
+							<p:outputLabel value="Observação" for="obs" />
+							<p:editor id="obs" widgetVar="obsWidget"
+								value="#{ClientesBean.objetoEdicao.observacao}" width="600" />
+
+						</h:panelGrid>
+					</p:tab>
+
+
+
+				</p:tabView>
+				<p:separator />
+				<p:outputLabel value="" />
+
+
+				<p:commandButton value="Salvar" id="salvar-button"
+					name="salvar-button" action="#{ClientesBean.salvar}"
+					process="frm:Clientes-dialog"
+					update="frm:msgs-dialog"
+					oncomplete="if (!args.validationFailed) PF('edicaoClientesDialog').hide()" />
+
+				<p:outputLabel value="" />
+
+			</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>
